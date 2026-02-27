@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import axios from "axios";
 import "./Auth.css";
 
 function Login({ setUser }) {
@@ -7,73 +8,49 @@ function Login({ setUser }) {
   const { role } = useParams();
   const navigate = useNavigate();
 
+  const API_URL = "https://civicconnect-backend-2.onrender.com"; 
+  // ⬆️ REPLACE this with your real backend Render URL
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // 🔹 Added states for Forgot Password
+  // 🔹 Forgot Password UI (kept same, no change)
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/users/login`,
+        { email, password }
+      );
 
-    const matchedUser = users.find(
-      (u) =>
-        u.email === email &&
-        u.password === password &&
-        u.role === role
-    );
+      const userData = response.data;
 
-    if (matchedUser) {
-      setUser(matchedUser);
-      localStorage.setItem("loggedInUser", JSON.stringify(matchedUser));
+      // Store token
+      localStorage.setItem("token", userData.token);
+
+      // Store logged-in user
+      localStorage.setItem("loggedInUser", JSON.stringify(userData));
+
+      setUser(userData);
 
       role === "admin"
         ? navigate("/admin")
         : navigate("/citizen");
 
-    } else {
-      alert("Invalid credentials for selected portal.");
+    } catch (error) {
+      alert("Invalid email or password.");
     }
   };
 
-  // 🔹 Added Forgot Password Function
+  // 🔹 Keeping your Forgot Password UI same (still frontend only for now)
   const handleResetPassword = () => {
-
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-
-    const existingUser = users.find(
-      (u) => u.email === forgotEmail && u.role === role
-    );
-
-    if (!existingUser) {
-      alert("User not found with this email and role.");
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      alert("Passwords do not match.");
-      return;
-    }
-
-    const updatedUsers = users.map((u) =>
-      u.email === forgotEmail && u.role === role
-        ? { ...u, password: newPassword }
-        : u
-    );
-
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-
-    alert("Password Reset Successful");
-
-    setShowForgot(false);
-    setForgotEmail("");
-    setNewPassword("");
-    setConfirmPassword("");
+    alert("Password reset feature needs backend integration.");
   };
 
   return (
@@ -85,10 +62,20 @@ function Login({ setUser }) {
 
         <form onSubmit={handleLogin}>
           <label>Email</label>
-          <input type="email" onChange={(e) => setEmail(e.target.value)} required />
+          <input 
+            type="email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)} 
+            required 
+          />
 
           <label>Password</label>
-          <input type="password" onChange={(e) => setPassword(e.target.value)} required />
+          <input 
+            type="password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)} 
+            required 
+          />
 
           <button type="submit">Login</button>
         </form>
@@ -104,7 +91,6 @@ function Login({ setUser }) {
 
         {showForgot && (
           <div style={{ marginTop: "15px" }}>
-
             <label>Enter Registered Email</label>
             <input
               type="email"
@@ -132,7 +118,6 @@ function Login({ setUser }) {
             >
               Reset Password
             </button>
-
           </div>
         )}
 
