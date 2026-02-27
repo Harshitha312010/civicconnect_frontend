@@ -1,0 +1,219 @@
+/* ================= PROFILE PAGE ================= */
+
+.profile-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e3f2fd, #f1f8ff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Soft background light spots */
+.profile-page::before,
+.profile-page::after {
+  content: "";
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: floatLight 10s infinite alternate ease-in-out;
+}
+
+.profile-page::before {
+  top: -100px;
+  left: -100px;
+}
+
+.profile-page::after {
+  bottom: -120px;
+  right: -120px;
+  animation-delay: 3s;
+}
+
+@keyframes floatLight {
+  from { transform: translateY(0px); }
+  to { transform: translateY(40px); }
+}
+
+/* ================= PROFILE CARD ================= */
+
+.profile-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  width: 450px;
+  padding: 30px;
+  border-radius: 16px;
+
+  border: 1px solid rgba(255,255,255,0.6);
+  border-top: 4px solid rgba(15, 76, 129, 0.9);
+
+  box-shadow:
+    0 25px 50px rgba(13, 71, 161, 0.25),
+    0 10px 20px rgba(13, 71, 161, 0.18);
+
+  position: relative;
+  z-index: 2;
+
+  animation: floatCard 2.5s ease-in-out infinite alternate;
+}
+
+/* Floating animation */
+@keyframes floatCard {
+  from { transform: translateY(0px); }
+  to { transform: translateY(-10px); }
+}
+
+/* Outside glow */
+.profile-card::before {
+  content: "";
+  position: absolute;
+  inset: -15px;
+  border-radius: 25px;
+  z-index: -1;
+  animation: glowPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes glowPulse {
+  from { opacity: 0.7; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.05); }
+}
+
+/* ================= CONTENT ================= */
+
+.profile-card h2 {
+  text-align: center;
+  color: rgba(15, 76, 129, 0.9);
+  margin-bottom: 20px;
+}
+
+/* Photo */
+.profile-photo-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-photo-section img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid rgba(15, 76, 129, 0.9);
+  object-fit: cover;
+  box-shadow: 0 5px 15px rgba(13, 71, 161, 0.2);
+}
+
+/* Form */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-form label {
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.profile-form input {
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: 0.3s;
+}
+
+.profile-form input:focus {
+  outline: none;
+  border-color: #0B3D91;
+  box-shadow: 0 0 6px rgba(11, 61, 145, 0.4);
+}
+
+/* Button container */
+.profile-buttons {
+  margin-top: 25px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;              /* space between buttons */
+}
+
+/* Main buttons */
+.profile-buttons button {
+  padding: 7px 12px;      /* smaller size */
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+
+  background: rgba(15, 76, 129, 0.75);  /* your blue */
+  color: white;
+  font-weight: 500;
+  font-size: 13px;
+
+  transition: 0.3s ease;
+}
+
+/* Hover */
+.profile-buttons button:hover {
+  background: rgba(15, 76, 129, 0.9);
+  box-shadow: 0 4px 12px rgba(15, 76, 129, 0.3);
+}
+
+/* Logout Button */
+.logout-btn {
+  background: rgba(198, 40, 40, 0.85);
+}
+
+.logout-btn:hover {
+  background: rgba(198, 40, 40, 1);
+}
+/* Center Update Password button */
+.auth-card button {
+  display: block;
+  margin: 20px auto 0 auto;   /* center horizontally */
+
+  background: rgba(15, 76, 129, 0.75);
+  color: white;
+
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 500;
+
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+
+  width: fit-content;
+}
+
+.auth-card button:hover {
+  background: rgba(15, 76, 129, 0.9);
+  box-shadow: 0 4px 10px rgba(15, 76, 129, 0.3);
+}
+/* Change Password Page Button */
+.profile-form button {
+  display: block;
+  margin: 15px auto 0 auto;   /* centers horizontally */
+
+  background: rgba(15, 76, 129, 0.75);
+  color: white;
+
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 500;
+
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+
+  width: fit-content;
+}
+
+.profile-form button:hover {
+  background: rgba(15, 76, 129, 0.9);
+  box-shadow: 0 4px 10px rgba(15, 76, 129, 0.3);
+}
