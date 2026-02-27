@@ -127,7 +127,7 @@ function AppLayout() {
             path="/analytics"
             element={
               user?.role === "admin"
-                ? <AdminAnalytics complaints={complaints} />
+                ? <AdminAnalytics complaints={complaints} setComplaints={setComplaints} />
                 : <Navigate to="/" />
             }
           />

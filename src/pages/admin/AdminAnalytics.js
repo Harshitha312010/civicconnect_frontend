@@ -8,6 +8,8 @@ import {
   Legend
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
+import { useEffect } from "react";
+import axios from "axios";
 import "D:/MERN Project/project/src/styles/Theme.css"
 
 ChartJS.register(
@@ -19,7 +21,23 @@ ChartJS.register(
   Legend
 );
 
-function AdminAnalytics({ complaints }) {
+function AdminAnalytics({ complaints, setComplaints }) {
+
+  const API_URL = "https://civicconnect-backend-2.onrender.com";
+
+  // ✅ FETCH FROM BACKEND
+  useEffect(() => {
+    const fetchComplaints = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/issues`);
+        setComplaints(response.data);
+      } catch (error) {
+        console.log("Error fetching analytics data");
+      }
+    };
+
+    fetchComplaints();
+  }, []);
 
   const categories = [...new Set(complaints.map(c => c.category))];
 
