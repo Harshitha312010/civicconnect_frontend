@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 function ReportIssue({ complaints, setComplaints }) {
 
@@ -14,6 +15,9 @@ function ReportIssue({ complaints, setComplaints }) {
     longitude: "",
     image: null
   });
+
+  const API_URL = "https://civicconnect-backend-2.onrender.com";
+  // 🔴 Replace with your real backend URL
 
   const handleChange = (e) => {
     if (e.target.name === "image") {
@@ -58,32 +62,51 @@ function ReportIssue({ complaints, setComplaints }) {
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newComplaint = {
-      id: Date.now(),
-      ...formData,
-      status: "Pending",
-      createdAt: new Date()
-    };
+    try {
 
-    setComplaints([...complaints, newComplaint]);
+      const token = localStorage.getItem("token");
 
-    alert("Complaint Submitted Successfully!");
+      const response = await axios.post(
+        `${API_URL}/api/issues`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-    setFormData({
-      title: "",
-      description: "",
-      category: "Road",
-      city: "",
-      area: "",
-      state: "",
-      location: "",
-      latitude: "",
-      longitude: "",
-      image: null
-    });
+      const newComplaint = response.data;
+
+      setComplaints([...complaints, newComplaint]);
+
+      alert("Complaint Submitted Successfully!");
+
+      setFormData({
+        title: "",
+        description: "",
+        category: "Road",
+        city: "",
+        area: "",
+        state: "",
+        location: "",
+        latitude: "",
+        longitude: "",
+        image: null
+      });
+
+    } catch (error) {
+
+      if (error.response && error.response.status === 401) {
+        alert("Please login again.");
+      } else {
+        alert("Error submitting complaint.");
+      }
+
+    }
   };
 
   return (
@@ -156,10 +179,8 @@ function ReportIssue({ complaints, setComplaints }) {
           placeholder="Click button to get current location"
         />
 
-        {/* NORMAL SIZE BUTTONS */}
         <div style={{ marginTop: "4px" }}>
 
-          {/* Left aligned */}
           <div style={{ textAlign: "left", marginBottom: "15px" }}>
             <button
               type="button"
@@ -178,7 +199,6 @@ function ReportIssue({ complaints, setComplaints }) {
             </button>
           </div>
 
-          {/* Center aligned */}
           <div style={{ textAlign: "center" }}>
             <button
               type="submit"
