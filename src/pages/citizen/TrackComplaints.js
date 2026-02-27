@@ -1,18 +1,51 @@
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 function TrackComplaints({ complaints, setComplaints }) {
 
   const [editingId, setEditingId] = useState(null);
   const [editData, setEditData] = useState({});
 
-  const deleteComplaint = (id) => {
-    const updated = complaints.filter(c => c.id !== id);
-    setComplaints(updated);
+  const API_URL = "https://civicconnect-backend-2.onrender.com";
+
+  // ✅ FETCH FROM BACKEND
+  useEffect(() => {
+    const fetchComplaints = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/issues`);
+        setComplaints(response.data);
+      } catch (error) {
+        console.log("Error fetching complaints");
+      }
+    };
+
+    fetchComplaints();
+  }, []);
+
+  // ✅ DELETE FROM BACKEND
+  const deleteComplaint = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.delete(
+        `${API_URL}/api/issues/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      const updated = complaints.filter(c => c._id !== id);
+      setComplaints(updated);
+
+    } catch (error) {
+      alert("Error deleting complaint");
+    }
   };
 
   const startEdit = (complaint) => {
-    setEditingId(complaint.id);
+    setEditingId(complaint._id);
     setEditData(complaint);
   };
 
@@ -29,8 +62,6 @@ function TrackComplaints({ complaints, setComplaints }) {
       });
     }
   };
-
-  /* ================= CURRENT LOCATION ================= */
 
   const getCurrentLocation = () => {
     navigator.geolocation.getCurrentPosition(
@@ -59,12 +90,31 @@ function TrackComplaints({ complaints, setComplaints }) {
     );
   };
 
-  const saveEdit = () => {
-    const updated = complaints.map(c =>
-      c.id === editingId ? editData : c
-    );
-    setComplaints(updated);
-    setEditingId(null);
+  // ✅ UPDATE FROM BACKEND
+  const saveEdit = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.put(
+        `${API_URL}/api/issues/${editingId}`,
+        editData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      const updatedList = complaints.map(c =>
+        c._id === editingId ? response.data : c
+      );
+
+      setComplaints(updatedList);
+      setEditingId(null);
+
+    } catch (error) {
+      alert("Error updating complaint");
+    }
   };
 
   return (
@@ -76,12 +126,10 @@ function TrackComplaints({ complaints, setComplaints }) {
       )}
 
       {complaints.map(c => (
-        <div key={c.id} className="glass-card">
+        <div key={c._id} className="glass-card">
 
-          {editingId === c.id ? (
+          {editingId === c._id ? (
             <>
-              {/* ================= EDIT MODE ================= */}
-
               <div className="form-group">
                 <label>Title</label>
                 <input name="title" value={editData.title} onChange={handleChange} />
@@ -96,9 +144,10 @@ function TrackComplaints({ complaints, setComplaints }) {
                 <label>Category</label>
                 <select name="category" value={editData.category} onChange={handleChange}>
                   <option>Road</option>
-                  <option>Streetlight</option>
-                  <option>Water</option>
                   <option>Garbage</option>
+                  <option>Water</option>
+                  <option>Electricity</option>
+                  <option>Other</option>
                 </select>
               </div>
 
@@ -148,8 +197,6 @@ function TrackComplaints({ complaints, setComplaints }) {
             </>
           ) : (
             <>
-              {/* ================= NORMAL VIEW ================= */}
-
               <h3>{c.title}</h3>
               <p>{c.description}</p>
               <p><strong>Category:</strong> {c.category}</p>
@@ -167,7 +214,7 @@ function TrackComplaints({ complaints, setComplaints }) {
               )}
 
               <p><strong>Status:</strong> {c.status}</p>
-              {/* Progress Bar */}
+
               <div className="progress-container">
                 <div
                   className={`progress-bar ${c.status === "Pending"
@@ -182,7 +229,7 @@ function TrackComplaints({ complaints, setComplaints }) {
               {c.status !== "Resolved" && (
                 <div className="button-group">
                   <button className="btn" onClick={() => startEdit(c)} style={{ width: "10%" }}>Edit</button>
-                  <button className="btn btn-danger" onClick={() => deleteComplaint(c.id)} style={{ width: "10%" }}>Delete</button>
+                  <button className="btn btn-danger" onClick={() => deleteComplaint(c._id)} style={{ width: "10%" }}>Delete</button>
                 </div>
               )}
             </>

@@ -17,7 +17,6 @@ function ReportIssue({ complaints, setComplaints }) {
   });
 
   const API_URL = "https://civicconnect-backend-2.onrender.com";
-  // 🔴 Replace with your real backend URL
 
   const handleChange = (e) => {
     if (e.target.name === "image") {
@@ -32,8 +31,6 @@ function ReportIssue({ complaints, setComplaints }) {
       });
     }
   };
-
-  /* ================= CURRENT LOCATION ================= */
 
   const getCurrentLocation = () => {
     navigator.geolocation.getCurrentPosition(
@@ -66,7 +63,6 @@ function ReportIssue({ complaints, setComplaints }) {
     e.preventDefault();
 
     try {
-
       const token = localStorage.getItem("token");
 
       const response = await axios.post(
@@ -138,9 +134,10 @@ function ReportIssue({ complaints, setComplaints }) {
           onChange={handleChange}
         >
           <option>Road</option>
-          <option>Streetlight</option>
-          <option>Water</option>
           <option>Garbage</option>
+          <option>Water</option>
+          <option>Electricity</option>
+          <option>Other</option>
         </select>
 
         <label style={{ fontSize: "16px", fontWeight: "400" }}>City</label>
