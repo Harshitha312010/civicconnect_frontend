@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 import "./Auth.css";
 
 function Signup() {
@@ -11,12 +12,15 @@ function Signup() {
     city: "",
     state: "",
     pincode: "",
-    mobile: "",   // ✅ Keep this for forgot password OTP
+    mobile: "",
     role: "citizen",
     password: ""
   });
 
   const navigate = useNavigate();
+
+  const API_URL = "https://civicconnect-backend-2.onrender.com";
+  // 🔴 Replace with your real backend Render URL
 
   const handleChange = (e) => {
     setFormData({
@@ -25,26 +29,33 @@ function Signup() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+    try {
 
-    const emailExists = existingUsers.find(
-      (user) => user.email === formData.email
-    );
+      // Only send required backend fields
+      await axios.post(
+        `${API_URL}/api/users/register`,
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password
+        }
+      );
 
-    if (emailExists) {
-      alert("Email already registered! Please use another email.");
-      return;
+      alert("Signup Successful!");
+      navigate("/");
+
+    } catch (error) {
+
+      if (error.response && error.response.data.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("Registration failed. Try again.");
+      }
+
     }
-
-    const updatedUsers = [...existingUsers, formData];
-
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-
-    alert("Signup Successful!");
-    navigate("/");
   };
 
   return (
@@ -108,7 +119,6 @@ function Signup() {
             required
           />
 
-          {/* ✅ Mobile Number (Required for Forgot Password OTP) */}
           <label>Mobile Number</label>
           <input
             type="text"
