@@ -47,6 +47,7 @@ function Navbar({ user, setUser }) {
             onClick={() => {
               setUser(null);
               localStorage.removeItem("loggedInUser");
+              localStorage.removeItem("token"); // ✅ Added
             }}
           >
             Logout

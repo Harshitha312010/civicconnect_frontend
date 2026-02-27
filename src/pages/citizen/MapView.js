@@ -7,7 +7,7 @@ function MapView({ complaints }) {
       <h2 className="page-title">Map View</h2>
 
       {complaints.map(c => (
-        <div key={c.id} className="glass-card">
+        <div key={c._id} className="glass-card">
           📍 {c.location} - {c.title}
         </div>
       ))}

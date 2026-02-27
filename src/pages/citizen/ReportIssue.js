@@ -96,8 +96,8 @@ function ReportIssue({ complaints, setComplaints }) {
 
     } catch (error) {
 
-      if (error.response && error.response.status === 401) {
-        alert("Please login again.");
+      if (error.response && error.response.data.message) {
+        alert(error.response.data.message);
       } else {
         alert("Error submitting complaint.");
       }

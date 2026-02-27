@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 import "./Auth.css";
 
 function ForgotPassword() {
@@ -15,6 +16,8 @@ function ForgotPassword() {
 
   const [timer, setTimer] = useState(0);
 
+  const API_URL = "https://civicconnect-backend-2.onrender.com";
+
   // ✅ Countdown Timer
   useEffect(() => {
     if (timer <= 0) return;
@@ -26,62 +29,58 @@ function ForgotPassword() {
     return () => clearInterval(interval);
   }, [timer]);
 
-  // ✅ Send OTP
-  const handleSendOtp = () => {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+  // ✅ Send OTP (CONNECTED TO BACKEND)
+  const handleSendOtp = async () => {
+    try {
+      await axios.post(`${API_URL}/api/send-otp`, { mobile });
 
-    const existingUser = users.find(
-      (u) => u.mobile === mobile && u.role === role
-    );
+      setTimer(60);
+      setOtp("");
+      setGeneratedOtp("sent"); // just to show OTP field
 
-    if (!existingUser) {
-      alert("No account found with this mobile number.");
-      return;
+      alert("OTP sent successfully");
+
+    } catch (error) {
+      alert("Failed to send OTP");
     }
-
-    const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    setGeneratedOtp(randomOtp);
-    setTimer(60); // 🔥 Start 60 sec timer
-    setOtp("");
-    alert("OTP Sent: " + randomOtp);
   };
 
-  // ✅ Verify OTP
-  const handleVerifyOtp = () => {
-    if (timer === 0) {
-      alert("OTP Expired. Please resend OTP.");
-      setGeneratedOtp("");
-      return;
-    }
+  // ✅ Verify OTP (CONNECTED TO BACKEND)
+  const handleVerifyOtp = async () => {
+    try {
+      await axios.post(`${API_URL}/api/verify-otp`, {
+        mobile,
+        otp
+      });
 
-    if (otp === generatedOtp) {
       setOtpVerified(true);
       alert("OTP Verified Successfully");
-    } else {
-      alert("Invalid OTP");
+
+    } catch (error) {
+      alert("Invalid or Expired OTP");
     }
   };
 
-  // ✅ Reset Password
-  const handleResetPassword = () => {
+  // ✅ Reset Password (CALL BACKEND LOGIN SYSTEM)
+  const handleResetPassword = async () => {
     if (newPassword !== confirmPassword) {
       alert("Passwords do not match");
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    try {
+      await axios.put(`${API_URL}/api/users/reset-password`, {
+        mobile,
+        newPassword,
+        role
+      });
 
-    const updatedUsers = users.map((u) =>
-      u.mobile === mobile && u.role === role
-        ? { ...u, password: newPassword }
-        : u
-    );
+      alert("Password Reset Successful");
+      navigate(`/login/${role}`);
 
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-
-    alert("Password Reset Successful");
-    navigate(`/login/${role}`);
+    } catch (error) {
+      alert("Error resetting password");
+    }
   };
 
   return (
@@ -99,12 +98,10 @@ function ForgotPassword() {
               onChange={(e) => setMobile(e.target.value)}
             />
 
-            {/* ✅ Send OTP Button */}
             <button onClick={handleSendOtp} disabled={timer > 0}>
               {timer > 0 ? `Resend OTP in ${timer}s` : "Send OTP"}
             </button>
 
-            {/* ✅ Show OTP Section Only After Sending */}
             {generatedOtp && (
               <>
                 <label>Enter OTP</label>
@@ -118,7 +115,6 @@ function ForgotPassword() {
                   Verify OTP
                 </button>
 
-                {/* ✅ Countdown Display */}
                 {timer > 0 && (
                   <p style={{ color: "red", marginTop: "10px" }}>
                     OTP expires in {timer} seconds

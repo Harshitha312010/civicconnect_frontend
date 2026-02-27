@@ -30,7 +30,7 @@ function AdminHeatmap({ complaints }) {
 
               return (
                 <Circle
-                  key={c.id}
+                  key={c._id}
                   center={[c.latitude, c.longitude]}
                   radius={300}
                   pathOptions={{

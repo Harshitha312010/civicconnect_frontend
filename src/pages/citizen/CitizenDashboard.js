@@ -34,18 +34,17 @@ function CitizenDashboard({ complaints }) {
       <h3 style={{ marginTop: "40px" }}>Recent Complaints</h3>
 
       {complaints.slice(0, 3).map(c => (
-        <div key={c.id} className="glass-card">
+        <div key={c._id} className="glass-card">
           <strong>{c.title}</strong>
           <p>{c.description}</p>
 
           <span
-            className={`status-badge ${
-              c.status === "Pending"
+            className={`status-badge ${c.status === "Pending"
                 ? "status-pending"
                 : c.status === "In Progress"
-                ? "status-progress"
-                : "status-resolved"
-            }`}
+                  ? "status-progress"
+                  : "status-resolved"
+              }`}
           >
             {c.status}
           </span>

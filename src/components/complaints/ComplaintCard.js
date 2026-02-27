@@ -53,21 +53,21 @@ function ComplaintCard({ complaint, updateStatus }) {
       <div className="button-group">
         <button
           className="btn"
-          onClick={() => updateStatus(complaint.id, "Pending")}
+          onClick={() => updateStatus(complaint._id, "Pending")}
         >
           Pending
         </button>
 
         <button
           className="btn"
-          onClick={() => updateStatus(complaint.id, "In Progress")}
+          onClick={() => updateStatus(complaint._id, "In Progress")}
         >
           In Progress
         </button>
 
         <button
           className="btn"
-          onClick={() => updateStatus(complaint.id, "Resolved")}
+          onClick={() => updateStatus(complaint._id, "Resolved")}
         >
           Resolved
         </button>

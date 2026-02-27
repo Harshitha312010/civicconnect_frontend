@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function ChangePassword({ user }) {
 
@@ -11,6 +12,8 @@ function ChangePassword({ user }) {
     confirmPassword: ""
   });
 
+  const API_URL = "https://civicconnect-backend-2.onrender.com";
+
   const handleChange = (e) => {
     setPasswordData({
       ...passwordData,
@@ -18,31 +21,36 @@ function ChangePassword({ user }) {
     });
   };
 
-  const handleUpdate = () => {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-
-    const existingUser = users.find((u) => u.email === user.email);
-
-    if (existingUser.password !== passwordData.currentPassword) {
-      alert("Current password is incorrect");
-      return;
-    }
+  const handleUpdate = async () => {
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       alert("Passwords do not match");
       return;
     }
 
-    const updatedUsers = users.map((u) =>
-      u.email === user.email
-        ? { ...u, password: passwordData.newPassword }
-        : u
-    );
+    try {
 
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
+      const token = localStorage.getItem("token");
 
-    alert("Password Updated Successfully");
-    navigate("/profile");
+      await axios.put(
+        `${API_URL}/api/users/change-password`,
+        {
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      alert("Password Updated Successfully");
+      navigate("/profile");
+
+    } catch (error) {
+      alert("Current password is incorrect");
+    }
   };
 
   return (

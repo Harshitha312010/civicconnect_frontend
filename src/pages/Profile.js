@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Profile.css";
 
 function Profile({ user, setUser }) {
@@ -7,6 +8,8 @@ function Profile({ user, setUser }) {
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState(false);
   const [profileData, setProfileData] = useState(user);
+
+  const API_URL = "https://civicconnect-backend-2.onrender.com";
 
   const handleChange = (e) => {
     setProfileData({
@@ -29,38 +32,63 @@ function Profile({ user, setUser }) {
     }
   };
 
-  const handleSave = () => {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+  // ✅ BACKEND SAVE
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-    const updatedUsers = users.map((u) =>
-      u.email === user.email ? profileData : u
-    );
+      const response = await axios.put(
+        `${API_URL}/api/users/profile`,
+        profileData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-    setUser(profileData);
-    setEditMode(false);
+      setUser(response.data);
+      setEditMode(false);
 
-    alert("Profile Updated Successfully");
+      alert("Profile Updated Successfully");
+
+    } catch (error) {
+      alert("Error updating profile");
+    }
   };
 
-  const handleDeleteAccount = () => {
+  // ✅ BACKEND DELETE
+  const handleDeleteAccount = async () => {
+
     const confirmDelete = window.confirm(
       "Are you sure you want to delete your account?"
     );
 
     if (!confirmDelete) return;
 
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    try {
+      const token = localStorage.getItem("token");
 
-    const updatedUsers = users.filter((u) => u.email !== user.email);
+      await axios.delete(
+        `${API_URL}/api/users/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
+      alert("Account Deleted Successfully");
+      setUser(null);
 
-    alert("Account Deleted Successfully");
-    setUser(null);
+    } catch (error) {
+      alert("Error deleting account");
+    }
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("loggedInUser");
     setUser(null);
   };
 
@@ -132,7 +160,6 @@ function Profile({ user, setUser }) {
 
           <hr />
 
-          {/* 🔹 Move To Separate Page */}
           <button onClick={() => navigate("/change-password")}>
             Change Password
           </button>

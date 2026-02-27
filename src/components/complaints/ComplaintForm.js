@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import { detectCategory, assignDepartment } from "../../utils/categoryDetector";
 import { checkDuplicate } from "../../utils/duplicateChecker";
 
@@ -9,37 +10,52 @@ function ComplaintForm({ complaints, setComplaints }) {
     location: ""
   });
 
-  const handleSubmit = (e) => {
+  const API_URL = "https://civicconnect-backend-2.onrender.com";
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const category = detectCategory(data.description);
     const department = assignDepartment(category);
 
     const newComplaint = {
-      id: Date.now(),
       ...data,
       category,
       department,
-      status: "Pending",
-      reports: 1,
-      createdAt: new Date(),
-      resolvedAt: null,
-      rating: null
+      status: "Pending"
     };
 
+    // Optional frontend duplicate check (UX only)
     const duplicate = checkDuplicate(complaints, newComplaint);
 
     if (duplicate) {
-      const updated = complaints.map(c =>
-        c.id === duplicate.id
-          ? { ...c, reports: c.reports + 1 }
-          : c
+      alert("Similar complaint already exists.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.post(
+        `${API_URL}/api/issues`,
+        newComplaint,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       );
-      setComplaints(updated);
-      alert("Duplicate merged");
-    } else {
-      setComplaints([...complaints, newComplaint]);
+
+      setComplaints([...complaints, response.data]);
+
       alert("Complaint Submitted");
+
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("Error submitting complaint");
+      }
     }
 
     setData({ description: "", location: "" });

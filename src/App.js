@@ -31,21 +31,7 @@ function AppLayout() {
     }
   }, []);
 
-  /* ================= RESTORE COMPLAINTS ================= */
-
-  useEffect(() => {
-    const savedComplaints = localStorage.getItem("complaints");
-    if (savedComplaints) {
-      setComplaints(JSON.parse(savedComplaints));
-    }
-  }, []);
-
-  /* ================= SAVE COMPLAINTS ================= */
-
-  useEffect(() => {
-    localStorage.setItem("complaints", JSON.stringify(complaints));
-  }, [complaints]);
-
+ 
   /* ================= HIDE NAVBAR ================= */
 
   const hideNavbar =
