@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import "D:/MERN Project/project/src/styles/Theme.css";
 
 function AdminDashboard({ complaints, setComplaints }) {
@@ -8,6 +9,22 @@ function AdminDashboard({ complaints, setComplaints }) {
   const [selectedArea, setSelectedArea] = useState("All");
   const [selectedState, setSelectedState] = useState("All");
   const [timeSort, setTimeSort] = useState("Latest");
+
+  const API_URL = "https://civicconnect-backend-2.onrender.com";
+
+  // ✅ FETCH FROM BACKEND
+  useEffect(() => {
+    const fetchComplaints = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/issues`);
+        setComplaints(response.data);
+      } catch (error) {
+        console.log("Error fetching complaints");
+      }
+    };
+
+    fetchComplaints();
+  }, []);
 
   /* ================= UNIQUE DROPDOWN VALUES ================= */
 
@@ -39,13 +56,31 @@ function AdminDashboard({ complaints, setComplaints }) {
   const progress = filteredComplaints.filter(c => c.status === "In Progress").length;
   const resolved = filteredComplaints.filter(c => c.status === "Resolved").length;
 
-  /* ================= UPDATE STATUS ================= */
+  /* ================= UPDATE STATUS (CONNECTED TO BACKEND) ================= */
 
-  const updateStatus = (id, newStatus) => {
-    const updated = complaints.map(c =>
-      c.id === id ? { ...c, status: newStatus } : c
-    );
-    setComplaints(updated);
+  const updateStatus = async (id, newStatus) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.put(
+        `${API_URL}/api/issues/${id}`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      const updated = complaints.map(c =>
+        c._id === id ? response.data : c
+      );
+
+      setComplaints(updated);
+
+    } catch (error) {
+      alert("Error updating status");
+    }
   };
 
   return (
@@ -66,9 +101,10 @@ function AdminDashboard({ complaints, setComplaints }) {
           <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
             <option value="All">All</option>
             <option value="Road">Road</option>
-            <option value="Streetlight">Streetlight</option>
-            <option value="Water">Water</option>
             <option value="Garbage">Garbage</option>
+            <option value="Water">Water</option>
+            <option value="Electricity">Electricity</option>
+            <option value="Other">Other</option>
           </select>
         </div>
 
@@ -144,14 +180,12 @@ function AdminDashboard({ complaints, setComplaints }) {
         )}
 
         {sortedComplaints.map(c => (
-          <div key={c.id} className="glass-card" style={{ marginBottom: "20px" }}>
+          <div key={c._id} className="glass-card" style={{ marginBottom: "20px" }}>
 
             <h3>{c.title}</h3>
             <p>{c.description}</p>
 
-            {/* ✅ ADDED CATEGORY LINE */}
             <p><strong>Category:</strong> {c.category}</p>
-
             <p><strong>City:</strong> {c.city}</p>
             <p><strong>Area:</strong> {c.area}</p>
             <p><strong>State:</strong> {c.state}</p>
@@ -162,7 +196,6 @@ function AdminDashboard({ complaints, setComplaints }) {
               <img src={c.image} alt="complaint" className="preview-img" />
             )}
 
-            {/* STATUS BUTTONS */}
             <div
               style={{
                 marginTop: "10px",
@@ -171,7 +204,7 @@ function AdminDashboard({ complaints, setComplaints }) {
               }}
             >
               <button
-                onClick={() => updateStatus(c.id, "Pending")}
+                onClick={() => updateStatus(c._id, "Pending")}
                 style={{
                   width: "100px",
                   padding: "6px 0",
@@ -187,7 +220,7 @@ function AdminDashboard({ complaints, setComplaints }) {
               </button>
 
               <button
-                onClick={() => updateStatus(c.id, "In Progress")}
+                onClick={() => updateStatus(c._id, "In Progress")}
                 style={{
                   width: "100px",
                   padding: "6px 0",
@@ -203,7 +236,7 @@ function AdminDashboard({ complaints, setComplaints }) {
               </button>
 
               <button
-                onClick={() => updateStatus(c.id, "Resolved")}
+                onClick={() => updateStatus(c._id, "Resolved")}
                 style={{
                   width: "100px",
                   padding: "6px 0",
