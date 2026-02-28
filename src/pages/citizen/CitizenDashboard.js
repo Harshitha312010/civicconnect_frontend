@@ -1,4 +1,4 @@
-import "D:/MERN Project/project/src/styles/Theme.css"
+import "../../styles/Theme.css"
 
 function CitizenDashboard({ complaints }) {
 

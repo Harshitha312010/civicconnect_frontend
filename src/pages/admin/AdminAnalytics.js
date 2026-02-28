@@ -10,7 +10,7 @@ import {
 import { Bar, Pie } from "react-chartjs-2";
 import { useEffect } from "react";
 import axios from "axios";
-import "D:/MERN Project/project/src/styles/Theme.css"
+import "../../styles/Theme.css"
 
 ChartJS.register(
   BarElement,

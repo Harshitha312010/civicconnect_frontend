@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "D:/MERN Project/project/src/styles/Theme.css";
+import "../../styles/Theme.css"
 
 function AdminDashboard({ complaints, setComplaints }) {
 

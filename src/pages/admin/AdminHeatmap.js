@@ -1,5 +1,5 @@
 import { MapContainer, TileLayer, Circle } from "react-leaflet";
-import "D:/MERN Project/project/src/styles/Theme.css"
+import "../../styles/Theme.css"
 
 function AdminHeatmap({ complaints }) {
 
