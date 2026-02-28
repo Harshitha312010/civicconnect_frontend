@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import axios from "axios";
 import "./Auth.css";
 
 function Signup() {
+
+  const { role } = useParams(); // ✅ Get role from URL
 
   const [formData, setFormData] = useState({
     name: "",
@@ -13,14 +15,12 @@ function Signup() {
     state: "",
     pincode: "",
     mobile: "",
-    role: "citizen",
     password: ""
   });
 
   const navigate = useNavigate();
 
   const API_URL = "https://civicconnect-backend-5.onrender.com";
-  // 🔴 Replace with your real backend Render URL
 
   const handleChange = (e) => {
     setFormData({
@@ -34,18 +34,22 @@ function Signup() {
 
     try {
 
-      // Only send required backend fields
       await axios.post(
         `${API_URL}/api/users/register`,
         {
           name: formData.name,
           email: formData.email,
-          password: formData.password
+          password: formData.password,
+          mobile: formData.mobile,
+          city: formData.city,
+          state: formData.state,
+          pincode: formData.pincode,
+          role: role   // ✅ Send role automatically
         }
       );
 
       alert("Signup Successful!");
-      navigate("/");
+      navigate(`/login/${role}`);
 
     } catch (error) {
 
@@ -62,7 +66,9 @@ function Signup() {
     <div className="auth-page">
       <div className="auth-card">
         <h2 className="portal-title">Smart Civic-Connect Portal</h2>
-        <h3 className="auth-heading">Citizen / Admin Registration</h3>
+        <h3 className="auth-heading">
+          {role === "admin" ? "Admin Registration" : "Citizen Registration"}
+        </h3>
 
         <form onSubmit={handleSubmit}>
 
@@ -128,11 +134,7 @@ function Signup() {
             required
           />
 
-          <label>Role</label>
-          <select name="role" onChange={handleChange}>
-            <option value="citizen">Citizen</option>
-            <option value="admin">Admin</option>
-          </select>
+          {/* ✅ Removed manual role selection */}
 
           <label>Password</label>
           <input
@@ -147,7 +149,7 @@ function Signup() {
         </form>
 
         <p>
-          Already have account? <Link to="/">Login</Link>
+          Already have account? <Link to={`/login/${role}`}>Login</Link>
         </p>
       </div>
     </div>
