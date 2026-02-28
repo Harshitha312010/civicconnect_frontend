@@ -16,7 +16,7 @@ function ReportIssue({ complaints, setComplaints }) {
     image: null
   });
 
-  const API_URL = "https://civicconnect-backend-2.onrender.com";
+  const API_URL = "https://civicconnect-backend-5.onrender.com";
 
   const handleChange = (e) => {
     if (e.target.name === "image") {

@@ -19,7 +19,7 @@ function Signup() {
 
   const navigate = useNavigate();
 
-  const API_URL = "https://civicconnect-backend-2.onrender.com";
+  const API_URL = "https://civicconnect-backend-5.onrender.com";
   // 🔴 Replace with your real backend Render URL
 
   const handleChange = (e) => {

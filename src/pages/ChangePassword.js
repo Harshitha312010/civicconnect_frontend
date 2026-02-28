@@ -12,7 +12,7 @@ function ChangePassword({ user }) {
     confirmPassword: ""
   });
 
-  const API_URL = "https://civicconnect-backend-2.onrender.com";
+  const API_URL = "https://civicconnect-backend-5.onrender.com";
 
   const handleChange = (e) => {
     setPasswordData({

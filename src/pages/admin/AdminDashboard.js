@@ -10,7 +10,7 @@ function AdminDashboard({ complaints, setComplaints }) {
   const [selectedState, setSelectedState] = useState("All");
   const [timeSort, setTimeSort] = useState("Latest");
 
-  const API_URL = "https://civicconnect-backend-2.onrender.com";
+  const API_URL = "https://civicconnect-backend-5.onrender.com";
 
   // ✅ FETCH FROM BACKEND
   useEffect(() => {

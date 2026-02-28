@@ -10,7 +10,7 @@ function ComplaintForm({ complaints, setComplaints }) {
     location: ""
   });
 
-  const API_URL = "https://civicconnect-backend-2.onrender.com";
+  const API_URL = "https://civicconnect-backend-5.onrender.com";
 
   const handleSubmit = async (e) => {
     e.preventDefault();

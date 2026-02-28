@@ -9,7 +9,7 @@ function Profile({ user, setUser }) {
   const [editMode, setEditMode] = useState(false);
   const [profileData, setProfileData] = useState(user);
 
-  const API_URL = "https://civicconnect-backend-2.onrender.com";
+  const API_URL = "https://civicconnect-backend-5.onrender.com";
 
   const handleChange = (e) => {
     setProfileData({

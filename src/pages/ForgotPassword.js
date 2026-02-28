@@ -16,7 +16,7 @@ function ForgotPassword() {
 
   const [timer, setTimer] = useState(0);
 
-  const API_URL = "https://civicconnect-backend-2.onrender.com";
+  const API_URL = "https://civicconnect-backend-5.onrender.com";
 
   // ✅ Countdown Timer
   useEffect(() => {
